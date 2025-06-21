@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# UI Design System - Clean Minimalist with Glassmorphism
+
+## Design Philosophy
+All UI components and pages should follow a **clean, minimalist design** with abundant negative space and glassmorphism effects.
+
+## Typography
+- **Headlines**: Use large, bold, sans-serif fonts to create high contrast
+- **Primary font**: IBM Plex Sans (already configured in [layout.tsx](mdc:src/app/layout.tsx))
+- **Font weights**: Prefer 600-700 for headlines, 400-500 for body text
+- **Font sizes**: Use generous sizing with plenty of white space
+
+## Color Scheme & Backgrounds
+- **Gradients**: Use soft, abstract gradients as backgrounds
+- **Theme options**: Support both dark and light themes
+- **Glassmorphism**: Apply frosted-glass effects to content containers using:
+  - `backdrop-blur-md` or `backdrop-blur-lg`
+  - Semi-transparent backgrounds (`bg-white/10`, `bg-black/10`)
+  - Subtle borders (`border border-white/20`)
+
+## Layout Principles
+- **Negative space**: Embrace generous spacing between elements
+- **Minimalism**: Remove unnecessary visual elements
+- **Focus**: Use high contrast to draw attention to key elements
+- **Breathing room**: Large padding and margins throughout
+
+## Component Styling Guidelines
+
+### Glassmorphism Container Classes
+```css
+/* Light theme glassmorphism */
+.glass-light {
+  @apply backdrop-blur-md bg-white/10 border border-white/20 rounded-xl;
+}
+
+/* Dark theme glassmorphism */
+.glass-dark {
+  @apply backdrop-blur-md bg-black/10 border border-white/10 rounded-xl;
+}
+```
+
+### Spacing Standards
+- **Section padding**: `py-24 sm:py-32` for major sections
+- **Container padding**: `px-6 lg:px-8` for horizontal spacing
+- **Component spacing**: `space-y-8` or `gap-8` between related elements
+- **Micro spacing**: `mt-6`, `mb-4` for fine-tuned spacing
+
+### Button Styling
+- **Primary buttons**: High contrast with glassmorphism backing
+- **Secondary buttons**: Minimal with subtle glassmorphism
+- **Hover states**: Subtle backdrop-blur changes
+
+## Implementation Notes
+- Use Tailwind CSS classes consistently
+- Apply glassmorphism to cards, modals, navigation elements
+- Maintain accessibility with sufficient color contrast
+- Test both light and dark theme variations
+
+## File References
+- Main layout: [layout.tsx](mdc:src/app/layout.tsx)
+- Normal layout: [layout.tsx](mdc:src/app/(normal)/layout.tsx)
+- Global styles: [globals.css](mdc:src/app/globals.css)
+- Navbar component: [Navbar.tsx](mdc:src/components/Navbar.tsx)
+- Footer component: [Footer.tsx](mdc:src/components/Footer.tsx)
