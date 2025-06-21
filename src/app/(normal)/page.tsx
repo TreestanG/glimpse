@@ -13,7 +13,7 @@ export default function Home() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
         <div>
-          <h1 className="text-4xl lg:text-7xl tracking-tight mb-8">Know Their Answer. <br />Before You Ask.</h1>
+          <h1 className="text-4xl lg:text-7xl tracking-tight mb-8">Infinitely Pitch <br />To Your Ideal Investors.</h1>
           
           <SignedOut>
             <SignUpButton mode="modal">

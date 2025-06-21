@@ -9,6 +9,7 @@ interface CallInterfaceProps {
 	token: string;
 	serverUrl: string;
 	onDisconnect?: () => void;
+	onEndCall: () => void;
 }
 
 interface ParticipantVideoProps {
@@ -206,19 +207,18 @@ function MuteButton() {
 	);
 }
 
-function CallRoom() {
+function CallRoom({
+	onEndCall
+}: {
+	onEndCall: () => void;
+}) {
 	const participants = useParticipants();
 	const { localParticipant } = useLocalParticipant();
 	const { state } = useVoiceAssistant();
-	const router = useRouter();
 
 	const agentParticipant = participants.find((p) => p.identity !== localParticipant.identity);
 	const isLocalSpeaking = localParticipant.isSpeaking;
 	const isAgentSpeaking = agentParticipant?.isSpeaking || state === "speaking";
-
-	const handleEndCall = () => {
-		router.push("/home");
-	};
 
 	return (
 		<div className="h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
@@ -271,7 +271,7 @@ function CallRoom() {
 				<div className="flex justify-center items-center gap-2 mb-8 bg-white/10 border border-white/20 rounded-full p-2 max-w-2xl w-full">
 					<MuteButton />
 					<button
-						onClick={handleEndCall}
+						onClick={onEndCall}
 						className="hover:cursor-pointer p-3 rounded-full transition-all duration-200 backdrop-blur-md bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 flex items-center gap-3">
 						<PhoneOff className="w-5 h-5"/>
 					</button>
@@ -283,7 +283,7 @@ function CallRoom() {
 	);
 }
 
-export default function CallInterface({ token, serverUrl, onDisconnect }: CallInterfaceProps) {
+export default function CallInterface({ token, serverUrl, onDisconnect, onEndCall }: CallInterfaceProps) {
 	return (
 		<LiveKitRoom
 			video
@@ -307,7 +307,7 @@ export default function CallInterface({ token, serverUrl, onDisconnect }: CallIn
 				adaptiveStream: true,
 				dynacast: true,
 			}}>
-			<CallRoom />
+			<CallRoom onEndCall={onEndCall}/>
 		</LiveKitRoom>
 	);
 }
