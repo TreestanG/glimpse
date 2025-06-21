@@ -1,9 +1,11 @@
 from nltk.sentiment import SentimentIntensityAnalyzer
-from transformers import T5Tokenizer, T5ForConditionalGeneration
+import google.generativeai as genai
+import os
+from dotenv import load_dotenv
 
-# Load once globally if you're calling this multiple times
-tokenizer = T5Tokenizer.from_pretrained("t5-base")
-model = T5ForConditionalGeneration.from_pretrained("t5-base")
+load_dotenv()
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 def generate_summary(transcript):
 
@@ -14,23 +16,9 @@ def generate_summary(transcript):
     """
     # Join user utterances into a single input string
     text = " ".join(transcript)
-    input_text = "summarize: " + text.strip()
-
-    # Tokenize input
-    inputs = tokenizer(
-        input_text,
-        return_tensors="pt",
-        max_length=512,
-        truncation=True
-    )
-
-    # Generate summary
-    summary_ids = model.generate(
-        inputs["input_ids"],
-        max_length=100,
-        num_beams=4,
-        early_stopping=True
-    )
+    prompt = f"Summarize the following pitch in 3-4 sentences:\n\n{text}"
+    response = model.generate_content(prompt)
+    return response.text.strip()
 
     # Decode and return
     summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
