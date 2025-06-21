@@ -11,7 +11,7 @@ export default function CallPage() {
   const [error, setError] = useState<string>('');
   const [serverUrl, setServerUrl] = useState<string>('');
 
-  const backendUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://glimpse-livekit.livekit.cloud';
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   
   useEffect(() => {
     if (!isLoaded || !user) return;
