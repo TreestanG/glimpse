@@ -1,4 +1,6 @@
-import { Calendar, Home, Inbox, PhoneCall, Search, Settings } from "lucide-react"
+'use client'
+
+import { Calendar, Home, Mic } from "lucide-react"
 
 import {
     Sidebar,
@@ -10,26 +12,39 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
+import { CustomTrigger } from "./CustomSidebarTrigger"
+import { cn } from "@/lib/utils"
 
 const items = [
     {
         title: "Home",
-        url: "#",
+        url: "/home",
         icon: Home,
     },
     {
-        title: "Practice Pitch",
+        title: "Practice Live",
         url: "/call",
-        icon: PhoneCall,
+        icon: Mic,
+    },
+    {
+        title: "Pitch History",
+        url: "/history",
+        icon: Calendar,
     }
 ]
 
 export function AppSidebar() {
+
+    const { open } = useSidebar()
     return (
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
-                <p className="font-bold">Glimpse</p>
+                <div className={cn("flex items-center ", open ? "justify-between" : "justify-center")}>
+                    {open && <p className="font-bold">Glimpse</p>}
+                    <CustomTrigger />
+                </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
