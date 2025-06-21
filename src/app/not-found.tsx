@@ -4,9 +4,9 @@ export default function NotFound() {
     return (
         <div className="min-h-screen py-32 sm:py-48 lg:py-60 select-none bg-gradient-to-t overflow-hidden flex items-center justify-center">
             <div
-                className="absolute top-0 left-1/2 w-[600px] h-[600px] rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/4"
+                className=""
                 style={{
-                    background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 40%, transparent 70%)'
+                    background: 'radial-gradient(circle, rgba(255,204,0,0.15) 0%, rgba(255,204,0,0.08) 40%, transparent 50%)'
                 }}
             ></div>
 
