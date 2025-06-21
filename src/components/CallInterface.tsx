@@ -1,15 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import {
-	LiveKitRoom,
-	VideoTrack,
-	useParticipants,
-	useLocalParticipant,
-	useTracks,
-	useVoiceAssistant,
-	useRoomContext,
-} from "@livekit/components-react";
-import { Track, Participant, TrackPublication } from "livekit-client";
+import { LiveKitRoom, VideoTrack, useParticipants, useLocalParticipant, useTracks, useVoiceAssistant, useRoomContext } from "@livekit/components-react";
+import { Track, Participant, TrackPublication, LocalTrack } from "livekit-client";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface CallInterfaceProps {
 	token: string;
@@ -113,29 +106,103 @@ function RemoteAudioRenderer() {
 }
 
 function MuteButton() {
-	const room = useRoomContext();
 	const { localParticipant } = useLocalParticipant();
-	const tracks = useTracks([Track.Source.Microphone]);
-	const audioTrack = tracks.find((track) => track.participant.identity === localParticipant.identity && track.publication.kind === "audio");
-	const isMuted = audioTrack?.publication.isMuted || false;
+	const [isLoading, setIsLoading] = React.useState(false);
+	const microphonePublication = localParticipant?.getTrackPublication(Track.Source.Microphone);
+	const isMuted = microphonePublication?.isMuted ?? false;
 
 	const toggleMute = async () => {
+		if (!microphonePublication) return;
+
+		setIsLoading(true);
 		try {
-			await room.localParticipant.setMicrophoneEnabled(!isMuted);
+			if (microphonePublication.track instanceof LocalTrack) {
+				if (isMuted) {
+					await microphonePublication.track.unmute();
+				} else {
+					await microphonePublication.track.mute();
+				}
+			}
 		} catch (error) {
 			console.error("Failed to toggle microphone:", error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	return (
 		<button
 			onClick={toggleMute}
+			disabled={isLoading}
 			className={cn(
-				"hover:cursor-pointer px-4 py-2 rounded-lg transition-colors flex items-center gap-2",
-				isMuted ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
+				"hover:cursor-pointer px-6 py-3 rounded-full transition-all duration-200 backdrop-blur-md border flex items-center gap-3 mr-4",
+				isLoading && "opacity-70 cursor-not-allowed",
+				isMuted
+					? "bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-500"
+					: "bg-green-500/10 border-green-500/20 hover:bg-green-500/20 text-green-500"
 			)}>
-			<span>{isMuted ? "Unmute" : "Mute"}</span>
-			<div className={cn("w-2 h-2 rounded-full", isMuted ? "bg-red-300" : "bg-green-300")} />
+			<span className="text-sm font-medium relative flex items-center gap-2">
+				{isLoading ? (
+					<>
+						<svg
+							className="animate-spin h-4 w-4"
+							viewBox="0 0 24 24">
+							<circle
+								className="opacity-25"
+								cx="12"
+								cy="12"
+								r="10"
+								stroke="currentColor"
+								strokeWidth="4"
+								fill="none"
+							/>
+							<path
+								className="opacity-75"
+								fill="currentColor"
+								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+							/>
+						</svg>
+						{isMuted ? "Unmuting..." : "Muting..."}
+					</>
+				) : (
+					<>
+						{isMuted ? (
+							<svg
+								className="w-5 h-5"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+								/>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M4 4l16 16"
+								/>
+							</svg>
+						) : (
+							<svg
+								className="w-5 h-5"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+								/>
+							</svg>
+						)}
+						{isMuted ? "Unmute" : "Mute"}
+					</>
+				)}
+			</span>
+			<div className={cn("w-2 h-2 rounded-full", isMuted ? "bg-red-500" : "bg-green-500")} />
 		</button>
 	);
 }
@@ -144,10 +211,15 @@ function CallRoom() {
 	const participants = useParticipants();
 	const { localParticipant } = useLocalParticipant();
 	const { state } = useVoiceAssistant();
+	const router = useRouter();
 
 	const agentParticipant = participants.find((p) => p.identity !== localParticipant.identity);
 	const isLocalSpeaking = localParticipant.isSpeaking;
 	const isAgentSpeaking = agentParticipant?.isSpeaking || state === "speaking";
+
+	const handleEndCall = () => {
+		router.push("/home");
+	};
 
 	return (
 		<div className="h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
@@ -196,12 +268,31 @@ function CallRoom() {
 						</div>
 					</div>
 				</div>
-				<div className="flex justify-center items-center">
+
+				<div className="flex justify-center items-center gap-4 mb-8">
 					<MuteButton />
 					<button
-						className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-						onClick={() => (window.location.href = "/home")}>
-						End Call
+						onClick={handleEndCall}
+						className="hover:cursor-pointer px-6 py-3 rounded-full transition-all duration-200 backdrop-blur-md bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 flex items-center gap-3">
+						<span className="text-sm font-medium">End Call</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round">
+							<path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" />
+							<line
+								x1="23"
+								y1="1"
+								x2="1"
+								y2="23"
+							/>
+						</svg>
 					</button>
 				</div>
 
