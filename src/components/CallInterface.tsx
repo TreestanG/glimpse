@@ -6,10 +6,9 @@ import {
 	useLocalParticipant,
 	useTracks,
 	useVoiceAssistant,
-	BarVisualizer,
 	useRoomContext,
 } from "@livekit/components-react";
-import { Track, Participant, TrackPublication, AudioTrack as LKAudioTrack, LocalTrackPublication, Room } from "livekit-client";
+import { Track, Participant, TrackPublication } from "livekit-client";
 import { cn } from "@/lib/utils";
 
 interface CallInterfaceProps {
@@ -52,8 +51,6 @@ function ParticipantVideo({ participant, isSpeaking, isLocal = false }: Particip
 					</div>
 				</div>
 			)}
-
-			{isSpeaking && <div className="absolute top-3 left-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">Speaking</div>}
 
 			<div className="absolute bottom-3 left-3 bg-black/50 text-white px-2 py-1 rounded text-sm">
 				{isLocal ? "You" : participant.name || "VC Persona"}
@@ -134,7 +131,7 @@ function MuteButton() {
 		<button
 			onClick={toggleMute}
 			className={cn(
-				"px-4 py-2 rounded-lg transition-colors flex items-center gap-2",
+				"hover:cursor-pointer px-4 py-2 rounded-lg transition-colors flex items-center gap-2",
 				isMuted ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
 			)}>
 			<span>{isMuted ? "Unmute" : "Mute"}</span>
@@ -146,7 +143,7 @@ function MuteButton() {
 function CallRoom() {
 	const participants = useParticipants();
 	const { localParticipant } = useLocalParticipant();
-	const { state, audioTrack } = useVoiceAssistant();
+	const { state } = useVoiceAssistant();
 
 	const agentParticipant = participants.find((p) => p.identity !== localParticipant.identity);
 	const isLocalSpeaking = localParticipant.isSpeaking;
@@ -155,7 +152,6 @@ function CallRoom() {
 	return (
 		<div className="h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
 			<div className="max-w-7xl mx-auto h-full flex flex-col">
-				{/* Header */}
 				<div className="mb-6">
 					<div className="flex items-center justify-between">
 						<h1 className="text-2xl font-bold text-white">VC Practice Session</h1>
@@ -163,17 +159,10 @@ function CallRoom() {
 							<div className="text-sm text-gray-300">
 								Status: <span className="text-green-400 capitalize">{state || "connected"}</span>
 							</div>
-							<MuteButton />
-							<button
-								className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-								onClick={() => (window.location.href = "/home")}>
-								End Call
-							</button>
 						</div>
 					</div>
 				</div>
 
-				{/* Videos */}
 				<div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 					<div className="relative">
 						<h3 className="text-white mb-2 text-sm font-medium">You</h3>
@@ -207,26 +196,16 @@ function CallRoom() {
 						</div>
 					</div>
 				</div>
-
-				{/* Remote audio renderer */}
-				<RemoteAudioRenderer />
-
-				{/* Audio visualizer */}
-				<div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center space-x-4">
-							<div className="text-white text-sm">Audio:</div>
-							<div className="w-32 h-8">
-								<BarVisualizer
-									state={state}
-									barCount={8}
-									trackRef={audioTrack}
-									className="w-full h-full"
-								/>
-							</div>
-						</div>
-					</div>
+				<div className="flex justify-center items-center">
+					<MuteButton />
+					<button
+						className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+						onClick={() => (window.location.href = "/home")}>
+						End Call
+					</button>
 				</div>
+
+				<RemoteAudioRenderer />
 			</div>
 		</div>
 	);
