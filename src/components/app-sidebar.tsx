@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, PhoneCall, Search, Settings } from "lucide-react"
+import { Calendar, Home, Mic, Upload } from "lucide-react"
 
 import {
     Sidebar,
@@ -10,6 +10,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 
 const items = [
@@ -19,9 +20,19 @@ const items = [
         icon: Home,
     },
     {
-        title: "Practice Pitch",
+        title: "Practice Live",
         url: "/call",
-        icon: PhoneCall,
+        icon: Mic,
+    },
+    {
+        title: "Upload Pitch",
+        url: "/deck",
+        icon: Upload,
+    },
+    {
+        title: "Pitch History",
+        url: "/history",
+        icon: Calendar,
     }
 ]
 
@@ -29,7 +40,10 @@ export function AppSidebar() {
     return (
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
-                <p className="font-bold">Glimpse</p>
+                {
+                    <p className="font-bold">Glimpse</p>
+                }
+                
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
