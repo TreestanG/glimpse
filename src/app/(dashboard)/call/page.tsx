@@ -21,7 +21,9 @@ export default function CallPage() {
     if (!isLoaded || !user) return;
 
     const generateToken = async () => {
-      const room = 'room-vc-'+new Date().getTime();
+      const date = new Date();
+      const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`;
+      const room = `room-${user.id}-${dateStr}`;
       try {
         const params = new URLSearchParams({
           identity: `user-${user.id}`,
