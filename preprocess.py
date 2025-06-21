@@ -3,6 +3,8 @@ from collections import defaultdict
 import re
 from nltk.sentiment import SentimentIntensityAnalyzer
 from analysis_utils import generate_summary, get_agent_interest_score
+from dotenv import load_dotenv
+import os
 
 def connect_to_db(uri, db_name, collection_name):
     client = MongoClient(uri)
@@ -106,7 +108,8 @@ def preprocess_transcript(doc):
 
 def main():
     # Setup connection info
-    uri = "mongodb+srv://tristangeea:spurHackssss-1234@cluster0.fkvjsbs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    load_dotenv()  # Load environment variables from .env file if needed
+    uri = os.getenv("MONGODB_URI")  # Replace with your MongoDB URI
     db_name = "transcripts"         # Replace this
     collection_name = "transcripts" # Replace this
     
