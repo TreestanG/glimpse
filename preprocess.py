@@ -39,7 +39,10 @@ def main():
             "timestamp": processed["timestamp"],
             "summary": summary,
             "agent_interest_score": agent_interest_score,
-            "feedback": feedback
+            "feedback": feedback,
+            "clarity_score": processed["clarity_score"],
+            "user_filler_count": processed["user_filler_count"],
+            "talk_listen_ratio": processed["talk_listen_ratio"],
         }
         analysis_collection.insert_one(analysis_doc)
         print("Call ID:", processed["call_id"])
@@ -47,6 +50,8 @@ def main():
         print("Summary:", summary)
         print("Agent Interest Score:", agent_interest_score)
         print("Feedback:", feedback)
+        print("Clarity Score:", processed["clarity_score"])
+        print("User Filler Count:", processed["user_filler_count"])
         print("-" * 40)
 
 if __name__ == "__main__":

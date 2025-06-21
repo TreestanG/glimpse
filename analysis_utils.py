@@ -40,6 +40,16 @@ def extract_metadata(doc):
         "timestamp": timestamp
     }
 
+def count_filler_words(turns, filler_words=None):
+    if filler_words is None:
+        filler_words = {"um", "uh", "like", "you know", "so", "actually", "basically"}
+    count = 0
+    for turn in turns:
+        words = turn.lower().split()
+        count += sum(1 for w in words if w in filler_words)
+    return count
+
+
 def preprocess_transcript(doc, extract_turns, clean_text, count_words, extract_metadata):
     transcript_items = doc.get('transcript', {}).get('items', [])
     user_turns, agent_turns, agent_sentiments, user_interruptions, agent_interruptions = extract_turns(transcript_items, clean_text)
@@ -50,6 +60,24 @@ def preprocess_transcript(doc, extract_turns, clean_text, count_words, extract_m
     user_avg_words_per_turn = user_word_count / user_turn_count if user_turn_count else 0
     agent_avg_words_per_turn = agent_word_count / agent_turn_count if agent_turn_count else 0
     meta = extract_metadata(doc)
+
+    # Filler word counts
+    user_filler_count = count_filler_words(user_turns)
+
+
+    # Talk vs listen ratio
+    total_talk_time = doc.get("user_talk_time", None)
+    total_listen_time = doc.get("user_listen_time", None)
+    if total_talk_time and total_listen_time:
+        talk_listen_ratio = total_talk_time / (total_listen_time or 1)
+    else:
+        # Fallback: ratio of user to agent words
+        talk_listen_ratio = user_word_count / (agent_word_count or 1)
+
+    # Clarity/confidence score (example: inverse of filler rate)
+    total_user_words = sum(len(turn.split()) for turn in user_turns)
+    clarity_score = 1 - (user_filler_count / total_user_words) if total_user_words else 1
+
     result = {
         **meta,
         "user_turns": user_turns,
@@ -63,6 +91,9 @@ def preprocess_transcript(doc, extract_turns, clean_text, count_words, extract_m
         "agent_avg_words_per_turn": agent_avg_words_per_turn,
         "user_interruptions": user_interruptions,
         "agent_interruptions": agent_interruptions,
+        "user_filler_count": user_filler_count,
+        "talk_listen_ratio": talk_listen_ratio,
+        "clarity_score": clarity_score
     }
     return result
 
