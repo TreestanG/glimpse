@@ -3,6 +3,7 @@ import { LiveKitRoom, VideoTrack, useParticipants, useLocalParticipant, useTrack
 import { Track, Participant, TrackPublication, LocalTrack } from "livekit-client";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { PhoneOff } from "lucide-react";
 
 interface CallInterfaceProps {
 	token: string;
@@ -135,11 +136,11 @@ function MuteButton() {
 			onClick={toggleMute}
 			disabled={isLoading}
 			className={cn(
-				"hover:cursor-pointer px-6 py-3 rounded-full transition-all duration-200 backdrop-blur-md border flex items-center gap-3 mr-4",
+				"hover:cursor-pointer p-3 rounded-full transition-all duration-200 backdrop-blur-md border flex items-center gap-3 mr-4",
 				isLoading && "opacity-70 cursor-not-allowed",
 				isMuted
-					? "bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-500"
-					: "bg-green-500/10 border-green-500/20 hover:bg-green-500/20 text-green-500"
+					? "bg-gray-500/10 border-gray-500/20 hover:bg-gray-500/20 text-gray-400"
+					: "bg-white/10 border-white/20 hover:bg-white/20 text-white"
 			)}>
 			<span className="text-sm font-medium relative flex items-center gap-2">
 				{isLoading ? (
@@ -198,11 +199,9 @@ function MuteButton() {
 								/>
 							</svg>
 						)}
-						{isMuted ? "Unmute" : "Mute"}
 					</>
 				)}
 			</span>
-			<div className={cn("w-2 h-2 rounded-full", isMuted ? "bg-red-500" : "bg-green-500")} />
 		</button>
 	);
 }
@@ -223,9 +222,9 @@ function CallRoom() {
 
 	return (
 		<div className="h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
-			<div className="max-w-7xl mx-auto h-full flex flex-col">
-				<div className="mb-6">
-					<div className="flex items-center justify-between">
+			<div className="max-w-7xl mx-auto h-full flex flex-col items-center">
+				<div className="mb-6 w-full">
+					<div className="flex items-center justify-between w-full">
 						<h1 className="text-2xl font-bold text-white">VC Practice Session</h1>
 						<div className="flex items-center space-x-4">
 							<div className="text-sm text-gray-300">
@@ -269,30 +268,12 @@ function CallRoom() {
 					</div>
 				</div>
 
-				<div className="flex justify-center items-center gap-4 mb-8">
+				<div className="flex justify-center items-center gap-2 mb-8 bg-white/10 border border-white/20 rounded-full p-2 max-w-2xl w-full">
 					<MuteButton />
 					<button
 						onClick={handleEndCall}
-						className="hover:cursor-pointer px-6 py-3 rounded-full transition-all duration-200 backdrop-blur-md bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 flex items-center gap-3">
-						<span className="text-sm font-medium">End Call</span>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round">
-							<path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" />
-							<line
-								x1="23"
-								y1="1"
-								x2="1"
-								y2="23"
-							/>
-						</svg>
+						className="hover:cursor-pointer p-3 rounded-full transition-all duration-200 backdrop-blur-md bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 flex items-center gap-3">
+						<PhoneOff className="w-5 h-5"/>
 					</button>
 				</div>
 
