@@ -12,7 +12,6 @@ export default function CallPage() {
 	const [error, setError] = useState<string>("");
 	const [serverUrl, setServerUrl] = useState<string>("");
 	const [isAnalyzing, setIsAnalyzing] = useState(false);
-	const [analysisResult, setAnalysisResult] = useState<any>(null);
 	const [room, setRoom] = useState<string>("");
 
 	const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -81,14 +80,14 @@ export default function CallPage() {
 						result.summary &&
 						result.agent_interest_score !== undefined
 					) {
-						window.location.href = `/analysis-result?room=${room}`;
+						window.location.href = `/pitch/${result._id}`;
 						return;
 					}
 				}
 
 				attempts++;
 				if (attempts < maxAttempts) {
-					setTimeout(poll, 5000); // Poll every 5 seconds
+					setTimeout(poll, 5000);
 				} else {
 					setError("Analysis timed out. Please try again.");
 					setIsAnalyzing(false);
@@ -122,101 +121,6 @@ export default function CallPage() {
 			setIsAnalyzing(false);
 		}
 	};
-
-	if (analysisResult) {
-		const interestScore = analysisResult.agent_interest_score || 0;
-		const summary = analysisResult.summary || "No summary available";
-		const timestamp = analysisResult.timestamp ? new Date(analysisResult.timestamp).toLocaleString() : "Unknown";
-
-		// Determine interest level and color
-		const getInterestLevel = (score: number) => {
-			if (score >= 0.8) return { level: "Very High", color: "text-green-400", bgColor: "bg-green-500/20" };
-			if (score >= 0.6) return { level: "High", color: "text-green-300", bgColor: "bg-green-500/15" };
-			if (score >= 0.4) return { level: "Moderate", color: "text-yellow-400", bgColor: "bg-yellow-500/20" };
-			if (score >= 0.2) return { level: "Low", color: "text-orange-400", bgColor: "bg-orange-500/20" };
-			return { level: "Very Low", color: "text-red-400", bgColor: "bg-red-500/20" };
-		};
-
-		const interestLevel = getInterestLevel(interestScore);
-
-		return (
-			<div className="h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-6">
-				<div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-8 max-w-4xl w-full">
-					<div className="text-center mb-8">
-						<h2 className="text-3xl font-bold text-white mb-2">Pitch Analysis Complete!</h2>
-						<p className="text-gray-400 text-sm">Session analyzed on {timestamp}</p>
-					</div>
-
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-						{/* Interest Score Card */}
-						<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-							<h3 className="text-xl font-semibold text-white mb-4">VC Interest Level</h3>
-							<div className="text-center">
-								<div className={`inline-flex items-center justify-center w-24 h-24 rounded-full ${interestLevel.bgColor} mb-4`}>
-									<span className={`text-2xl font-bold ${interestLevel.color}`}>{Math.round(interestScore * 100)}%</span>
-								</div>
-								<p className={`text-lg font-medium ${interestLevel.color} mb-2`}>{interestLevel.level}</p>
-								<div className="w-full bg-gray-700 rounded-full h-2">
-									<div
-										className={`h-2 rounded-full transition-all duration-500 ${
-											interestScore >= 0.8
-												? "bg-green-400"
-												: interestScore >= 0.6
-												? "bg-green-300"
-												: interestScore >= 0.4
-												? "bg-yellow-400"
-												: interestScore >= 0.2
-												? "bg-orange-400"
-												: "bg-red-400"
-										}`}
-										style={{ width: `${interestScore * 100}%` }}></div>
-								</div>
-							</div>
-						</div>
-
-						{/* Additional Stats */}
-						<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-							<h3 className="text-xl font-semibold text-white mb-4">Session Stats</h3>
-							<div className="space-y-4">
-								<div className="flex justify-between items-center">
-									<span className="text-gray-300">Your Avg Words/Turn:</span>
-									<span className="text-white font-medium">{analysisResult.user_avg_words_per_turn || "N/A"}</span>
-								</div>
-								<div className="flex justify-between items-center">
-									<span className="text-gray-300">VC Avg Words/Turn:</span>
-									<span className="text-white font-medium">{analysisResult.agent_avg_words_per_turn || "N/A"}</span>
-								</div>
-								<div className="flex justify-between items-center">
-									<span className="text-gray-300">Call ID:</span>
-									<span className="text-gray-400 text-sm font-mono">{analysisResult.call_id || "N/A"}</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					{/* Summary Section */}
-					<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
-						<h3 className="text-xl font-semibold text-white mb-4">Session Summary</h3>
-						<p className="text-gray-300 leading-relaxed">{summary}</p>
-					</div>
-
-					{/* Action Buttons */}
-					<div className="flex justify-center gap-4">
-						<button
-							onClick={() => (window.location.href = "/call")}
-							className="hover:cursor-pointer backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300">
-							Practice Again
-						</button>
-						<button
-							onClick={() => (window.location.href = "/dashboard")}
-							className="hover:cursor-pointer bg-white text-black px-6 py-3 rounded-lg hover:opacity-90 hover:shadow-lg hover:shadow-amber-400/50 transition-all duration-300 font-medium">
-							Back to Dashboard
-						</button>
-					</div>
-				</div>
-			</div>
-		);
-	}
 
 	if (isAnalyzing) {
 		return (

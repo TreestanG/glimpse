@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
 interface AnalysisResult {
@@ -15,9 +13,11 @@ interface AnalysisResult {
 	agent_interest_score: number;
 }
 
-export default function AnalysisDetailPage() {
-	const searchParams = useSearchParams();
-	const room = searchParams.get("room");
+interface ContentProps {
+	id: string;
+}
+
+export default function Content({ id }: ContentProps) {
 	const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
 	const [error, setError] = useState<string>("");
 	const [isLoading, setIsLoading] = useState(true);
@@ -26,14 +26,14 @@ export default function AnalysisDetailPage() {
 
 	useEffect(() => {
 		const fetchAnalysisResult = async () => {
-			if (!room) {
-				setError("No room ID provided");
+			if (!id) {
+				setError("No analysis ID provided");
 				setIsLoading(false);
 				return;
 			}
 
 			try {
-				const response = await fetch(`${backendUrl}/analysis-result?room=${room}`, {
+				const response = await fetch(`${backendUrl}/analysis-result?room=${id}`, {
 					method: "GET",
 					headers: {
 						"ngrok-skip-browser-warning": "true",
@@ -55,14 +55,13 @@ export default function AnalysisDetailPage() {
 		};
 
 		fetchAnalysisResult();
-	}, [room, backendUrl]);
+	}, [id, backendUrl]);
 
-	// Get interest level and styling
 	const getInterestLevel = (score: number) => {
-		if (score >= 0.8) return { level: "Very High", color: "text-green-400", bgColor: "bg-green-500/20" };
-		if (score >= 0.6) return { level: "High", color: "text-green-300", bgColor: "bg-green-500/15" };
-		if (score >= 0.4) return { level: "Moderate", color: "text-yellow-400", bgColor: "bg-yellow-500/20" };
-		if (score >= 0.2) return { level: "Low", color: "text-orange-400", bgColor: "bg-orange-500/20" };
+		if (score >= 0.9) return { level: "Very High", color: "text-green-400", bgColor: "bg-green-500/20" };
+		if (score >= 0.7) return { level: "High", color: "text-green-300", bgColor: "bg-green-500/15" };
+		if (score >= 0.5) return { level: "Moderate", color: "text-yellow-400", bgColor: "bg-yellow-500/20" };
+		if (score >= 0.3) return { level: "Low", color: "text-orange-400", bgColor: "bg-orange-500/20" };
 		return { level: "Very Low", color: "text-red-400", bgColor: "bg-red-500/20" };
 	};
 
@@ -81,12 +80,12 @@ export default function AnalysisDetailPage() {
 		return (
 			<div className="h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
 				<div className="text-center backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-8 max-w-md">
-					<h2 className="text-xl font-bold text-white mb-4">Error</h2>
+					<h2 className="text-xl font-bold text-white mb-2">Error</h2>
 					<p className="text-gray-300 mb-6">{error}</p>
 					<Link
-						href="/analysis-result"
-						className="hover:cursor-pointer bg-white text-black px-6 py-3 rounded-lg hover:opacity-90 hover:shadow-lg hover:shadow-amber-400/50 transition-all duration-300 font-medium">
-						Back to History
+						href="/pitch-history"
+						className="">
+						<button className="hover:cursor-pointer bg-white text-black px-6 py-3 rounded-full hover:opacity-90 hover:shadow-lg hover:shadow-amber-400/50 transition-all duration-300 font-medium">Back to History</button>
 					</Link>
 				</div>
 			</div>
@@ -100,7 +99,7 @@ export default function AnalysisDetailPage() {
 					<h2 className="text-xl font-bold text-white mb-4">No Results Found</h2>
 					<p className="text-gray-300 mb-6">Could not find analysis results for this session.</p>
 					<Link
-						href="/analysis-result"
+						href="/pitch-history"
 						className="hover:cursor-pointer bg-white text-black px-6 py-3 rounded-lg hover:opacity-90 hover:shadow-lg hover:shadow-amber-400/50 transition-all duration-300 font-medium">
 						Back to History
 					</Link>
@@ -117,7 +116,7 @@ export default function AnalysisDetailPage() {
 			<div className="max-w-4xl mx-auto">
 				<div className="flex justify-between items-center mb-8">
 					<Link
-						href="/analysis-result"
+						href="/pitch-history"
 						className="text-white hover:text-gray-300 transition-colors duration-200 flex items-center gap-2">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -142,26 +141,25 @@ export default function AnalysisDetailPage() {
 					</div>
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-						{/* Interest Score Card */}
 						<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
-							<h3 className="text-xl font-semibold text-white mb-4">VC Interest Level</h3>
+							<h3 className="text-xl font-semibold text-white mb-4">VC Interest Score</h3>
 							<div className="text-center">
 								<div className={`inline-flex items-center justify-center w-24 h-24 rounded-full ${interestLevel.bgColor} mb-4`}>
 									<span className={`text-2xl font-bold ${interestLevel.color}`}>
-										{Math.round(analysisResult.agent_interest_score * 100)}%
+										{Math.round(analysisResult.agent_interest_score * 100)}
 									</span>
 								</div>
 								<p className={`text-lg font-medium ${interestLevel.color} mb-2`}>{interestLevel.level}</p>
 								<div className="w-full bg-gray-700 rounded-full h-2">
 									<div
 										className={`h-2 rounded-full transition-all duration-500 ${
-											analysisResult.agent_interest_score >= 0.8
+											analysisResult.agent_interest_score >= 0.9
 												? "bg-green-400"
-												: analysisResult.agent_interest_score >= 0.6
+												: analysisResult.agent_interest_score >= 0.7
 												? "bg-green-300"
-												: analysisResult.agent_interest_score >= 0.4
+												: analysisResult.agent_interest_score >= 0.5
 												? "bg-yellow-400"
-												: analysisResult.agent_interest_score >= 0.2
+												: analysisResult.agent_interest_score >= 0.3
 												? "bg-orange-400"
 												: "bg-red-400"
 										}`}
@@ -170,7 +168,6 @@ export default function AnalysisDetailPage() {
 							</div>
 						</div>
 
-						{/* Additional Stats */}
 						<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6">
 							<h3 className="text-xl font-semibold text-white mb-4">Session Stats</h3>
 							<div className="space-y-4">
@@ -190,13 +187,11 @@ export default function AnalysisDetailPage() {
 						</div>
 					</div>
 
-					{/* Summary Section */}
 					<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
 						<h3 className="text-xl font-semibold text-white mb-4">Session Summary</h3>
 						<p className="text-gray-300 leading-relaxed">{analysisResult.summary}</p>
 					</div>
 
-					{/* Action Buttons */}
 					<div className="flex justify-center gap-4">
 						<Link
 							href="/call"
@@ -204,7 +199,7 @@ export default function AnalysisDetailPage() {
 							Practice Again
 						</Link>
 						<Link
-							href="/analysis-result"
+							href="/pitch-history"
 							className="hover:cursor-pointer bg-white text-black px-6 py-3 rounded-lg hover:opacity-90 hover:shadow-lg hover:shadow-amber-400/50 transition-all duration-300 font-medium">
 							Back to History
 						</Link>
