@@ -22,7 +22,8 @@ export default function CallPage() {
 		const generateToken = async () => {
 			const date = new Date();
 			const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}`;
-			const room = `room-${user.id}-${dateStr}`;
+			const timeStr = `${date.getHours().toString().padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}`;
+			const room = `room-${user.id}-${dateStr}-${timeStr}`;
 			try {
 				const params = new URLSearchParams({
 					identity: `user-${user.id}`,
