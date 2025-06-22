@@ -30,7 +30,7 @@ const items = [
 	},
 	{
 		title: "Pitch History",
-		url: "/analysis-result",
+		url: "/pitch-history",
 		icon: Calendar,
 	},
 ];
