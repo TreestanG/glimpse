@@ -11,6 +11,7 @@ interface AnalysisResult {
 	agent_avg_words_per_turn: number;
 	summary: string;
 	agent_interest_score: number;
+	improvements: string[];
 }
 
 interface ContentProps {
@@ -152,17 +153,16 @@ export default function Content({ id }: ContentProps) {
 								<p className={`text-lg font-medium ${interestLevel.color} mb-2`}>{interestLevel.level}</p>
 								<div className="w-full bg-gray-700 rounded-full h-2">
 									<div
-										className={`h-2 rounded-full transition-all duration-500 ${
-											analysisResult.agent_interest_score >= 0.9
+										className={`h-2 rounded-full transition-all duration-500 ${analysisResult.agent_interest_score >= 0.9
 												? "bg-green-400"
 												: analysisResult.agent_interest_score >= 0.7
-												? "bg-green-300"
-												: analysisResult.agent_interest_score >= 0.5
-												? "bg-yellow-400"
-												: analysisResult.agent_interest_score >= 0.3
-												? "bg-orange-400"
-												: "bg-red-400"
-										}`}
+													? "bg-green-300"
+													: analysisResult.agent_interest_score >= 0.5
+														? "bg-yellow-400"
+														: analysisResult.agent_interest_score >= 0.3
+															? "bg-orange-400"
+															: "bg-red-400"
+											}`}
 										style={{ width: `${analysisResult.agent_interest_score * 100}%` }}></div>
 								</div>
 							</div>
@@ -190,6 +190,15 @@ export default function Content({ id }: ContentProps) {
 					<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
 						<h3 className="text-xl font-semibold text-white mb-4">Session Summary</h3>
 						<p className="text-gray-300 leading-relaxed">{analysisResult.summary}</p>
+					</div>
+
+					<div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
+						<h3 className="text-xl font-semibold text-white mb-4">Suggested Improvements</h3>
+						<ul className="list-disc list-inside text-gray-300 leading-relaxed">
+							{analysisResult.improvements.map((improvement, index) => (
+								<li key={index} className="text-gray-300 leading-relaxed">{improvement}</li>
+							))}
+						</ul>
 					</div>
 
 					<div className="flex justify-center gap-4">
