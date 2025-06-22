@@ -81,7 +81,7 @@ export default function CallPage() {
 						result.summary &&
 						result.agent_interest_score !== undefined
 					) {
-						window.location.href = `/pitch/${result._id}`;
+						window.location.href = `/pitch/${result.call_id}`;
 						return;
 					}
 				}
