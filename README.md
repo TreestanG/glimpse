@@ -1,28 +1,21 @@
 # Glimpse
 
+Glimpse is a VC pitch simulator. Imagine pitching to a VC until you get it right.
+
+Its main feature is a 1-on-1 call to VC. It responds exactly like how a VC would respond, offering live feedback and offers questions mid-call. Afterwards, we provide analytics and insights to your call telling you how to improve.
+
+## Installation
+
 Running the Glimpse Next.js Frontend
-bash
-Copy
-Edit
-# 1 · Install dependencies
+
+### 1 · Install dependencies
 pnpm install          # or: npm install / yarn
 
-# 2 · Add environment keys
+### 2 · Add environment keys
 cp .env.example .env.local
-# edit .env.local:
-# NEXT_PUBLIC_LIVEKIT_URL = https://your-livekit-server
-# (OPTIONAL) NEXT_PUBLIC_LIVEKIT_API_KEY / SECRET = ...
 
-# 3 · Start in dev mode
+### 3 · Run frontend
 pnpm dev               # http://localhost:3000
-Production build
-
-bash
-Copy
-Edit
-pnpm build
-pnpm start
-
 
 ![image](https://github.com/user-attachments/assets/6a190a94-a571-47d6-b90e-e6e1422f006d)
 
