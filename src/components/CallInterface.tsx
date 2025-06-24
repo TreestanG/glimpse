@@ -2,7 +2,6 @@ import {
   LiveKitRoom,
   useLocalParticipant,
   useParticipants,
-  useRoomContext,
   useTracks,
   useVoiceAssistant,
   VideoTrack,
@@ -14,7 +13,6 @@ import {
   type TrackPublication,
 } from 'livekit-client';
 import { PhoneOff } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -91,16 +89,15 @@ function RemoteAudio({ track, participant }: RemoteAudioProps) {
     if (!(track && audioRef.current)) return;
 
     const element = track.attach();
-    audioRef.current.srcObject = element.srcObject;
+    const audioElement = audioRef.current;
+    audioElement.srcObject = element.srcObject;
 
-    audioRef.current
+    audioElement
       .play()
       .catch((err) => console.warn('Audio playback failed', err));
 
     return () => {
-      if (audioRef.current) {
-        track.detach(audioRef.current);
-      }
+      track.detach(audioElement);
     };
   }, [track]);
 

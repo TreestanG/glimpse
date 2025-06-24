@@ -138,7 +138,7 @@ export default function AnalysisPage() {
             No Transcripts Found
           </h2>
           <p className="mb-6 text-gray-300">
-            You haven't completed any practice sessions yet.
+            You haven&apos;t completed any practice sessions yet.
           </p>
           <Link
             className="inline-block rounded-lg bg-white px-6 py-3 font-medium text-black transition-all duration-300 hover:cursor-pointer hover:opacity-90 hover:shadow-amber-400/50 hover:shadow-lg"

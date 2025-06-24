@@ -52,7 +52,7 @@ export default function Content({ id }: ContentProps) {
 
         const result = await response.json();
         setAnalysisResult(result);
-      } catch (error) {
+      } catch {
         setError('Failed to fetch analysis results. Please try again.');
       } finally {
         setIsLoading(false);

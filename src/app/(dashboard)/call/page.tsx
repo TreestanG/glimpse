@@ -49,7 +49,7 @@ export default function CallPage() {
         setIsConnecting(false);
         setServerUrl(data.url);
         setRoom(room);
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error generating token:', error);
         setError('Failed to connect to the call. Please try again.');
         setIsConnecting(false);
@@ -57,7 +57,7 @@ export default function CallPage() {
     };
 
     generateToken();
-  }, [user, isLoaded]);
+  }, [user, isLoaded, backendUrl]);
 
   const pollAnalysisResult = async () => {
     const maxAttempts = 24;
