@@ -1,8 +1,15 @@
-import { useSidebar } from "@/components/ui/sidebar"
-import { Menu } from "lucide-react"
+import { Menu } from 'lucide-react';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export function CustomTrigger() {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar } = useSidebar();
 
-  return <button onClick={toggleSidebar} className="hover:cursor-pointer hover:rotate-180 transition-all duration-300"><Menu className="w-6 h-6" /></button>
+  return (
+    <button
+      className="transition-all duration-300 hover:rotate-180 hover:cursor-pointer"
+      onClick={toggleSidebar}
+    >
+      <Menu className="h-6 w-6" />
+    </button>
+  );
 }
